@@ -59,11 +59,11 @@ impl BDA {
 
     /// Load a BDA on initial setup of a device.
     /// Returns None if no BDA appears to exist.
-    pub fn load<F>(f: &mut F) -> StratisResult<Option<BDA>>
+    pub fn load<F>(f: &mut F, index: usize) -> StratisResult<Option<BDA>>
     where
         F: Read + Seek + SyncAll,
     {
-        let header = match StaticHeader::setup(f, 0usize)? {
+        let header = match StaticHeader::setup(f, index)? {
             Some(header) => header,
             None => return Ok(None),
         };
@@ -241,7 +241,7 @@ mod tests {
             prop_assert!(bda.last_update_time().map(|t| t == &current_time).unwrap_or(false));
             prop_assert!(loaded_state.map(|s| &s == state).unwrap_or(false));
 
-            let mut bda = BDA::load(&mut buf).unwrap().unwrap();
+            let mut bda = BDA::load(&mut buf, 0usize).unwrap().unwrap();
             let loaded_state = bda.load_state(&mut buf).unwrap();
             prop_assert!(loaded_state.map(|s| &s == state).unwrap_or(false));
             prop_assert!(bda.last_update_time().map(|t| t == &current_time).unwrap_or(false));
