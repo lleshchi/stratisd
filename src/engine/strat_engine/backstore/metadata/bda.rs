@@ -63,7 +63,7 @@ impl BDA {
     where
         F: Read + Seek + SyncAll,
     {
-        let header = match StaticHeader::setup(f)? {
+        let header = match StaticHeader::setup(f, 0usize)? {
             Some(header) => header,
             None => return Ok(None),
         };
