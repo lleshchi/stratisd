@@ -19,7 +19,7 @@ use libcryptsetup_rs::SafeMemHandle;
 use crate::{
     engine::{
         engine::{Pool, MAX_STRATIS_PASS_SIZE},
-        types::{BlockDevTier, CreateAction, DevUuid, PoolUuid, SetCreateAction, SizedKeyMemory},
+        types::{CreateAction, DevUuid, PoolUuid, SetCreateAction, SizedKeyMemory},
     },
     stratis::{ErrorEnum, StratisError, StratisResult},
 };
@@ -39,13 +39,7 @@ pub fn create_pool_idempotent_or_err(
     let existing_paths: HashSet<PathBuf, _> = pool
         .blockdevs()
         .iter()
-        .filter_map(|(_, tier, bd)| {
-            if *tier == BlockDevTier::Data {
-                Some(bd.devnode().physical_path().to_owned())
-            } else {
-                None
-            }
-        })
+        .map(|(_, _, bd)| bd.devnode().physical_path().to_owned())
         .collect();
 
     if input_devices == existing_paths {
